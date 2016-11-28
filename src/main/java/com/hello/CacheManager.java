@@ -13,7 +13,7 @@ public class CacheManager {
 
     static {
         Thread cleanerThread = new Thread(new Runnable() {
-            int miliSecondToSleep = 5000;
+            int milliSecondToSleep = 5000;
             public void run() {
                 try {
                     while (true) {
@@ -24,9 +24,10 @@ public class CacheManager {
                             Cacheable value = (Cacheable) cachedMap.get(key);
                             if (value.isExpired()) {
                                 cachedMap.remove(key);
+                                System.out.println("remove cache");
                             }
                         }
-                        Thread.sleep(miliSecondToSleep);
+                        Thread.sleep(milliSecondToSleep);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -42,6 +43,15 @@ public class CacheManager {
     }
 
     public static Cacheable getCache(Object id) {
-        return null;
+        Cacheable object = (Cacheable) cachedMap.get(id);
+        if (object == null) {
+            return null;
+        }
+        if (object.isExpired()) {
+            cachedMap.remove(object.getIdentifier());
+            return null;
+        } else {
+            return object;
+        }
     }
 }
